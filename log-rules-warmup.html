@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log Rules Warm-Up | Math 172</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #c8102e;
+    --crimson-light: #e8193d;
+    --charcoal: #1a1a2e;
+    --surface: #16213e;
+    --card: #0f3460;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --teal: #00b4d8;
+    --text: #eaeaea;
+    --muted: #8892a4;
+    --product-color: #7bed9f;
+    --quotient-color: #70a1ff;
+    --power-color: #ffa502;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--charcoal);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0f0f1a 0%, var(--surface) 100%);
+    border-bottom: 3px solid var(--crimson);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .header-title span {
+    color: var(--crimson);
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 6px;
+  }
+
+  .mode-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--muted);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mode-btn.active {
+    border-color: var(--crimson);
+    background: var(--crimson);
+    color: white;
+  }
+
+  /* Tab nav */
+  .tab-nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 2px solid #1e2a45;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--crimson);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  main { flex: 1; padding: 20px; max-width: 860px; margin: 0 auto; width: 100%; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Formula cards */
+  .rule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .rule-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px;
+    border-left: 4px solid;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rule-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(255,255,255,0.04), transparent);
+    border-radius: 50%;
+  }
+
+  .rule-card.product { border-color: var(--product-color); }
+  .rule-card.quotient { border-color: var(--quotient-color); }
+  .rule-card.power { border-color: var(--power-color); }
+
+  .rule-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .rule-card.product .rule-label { color: var(--product-color); }
+  .rule-card.quotient .rule-label { color: var(--quotient-color); }
+  .rule-card.power .rule-label { color: var(--power-color); }
+
+  .rule-formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    line-height: 2;
+    color: white;
+  }
+
+  .rule-formula sub {
+    font-size: 0.65em;
+    vertical-align: sub;
+    line-height: 0;
+  }
+
+  .rule-formula sup {
+    font-size: 0.65em;
+    vertical-align: super;
+    line-height: 0;
+  }
+
+  .mf {
+    display: block;
+    line-height: 2.2;
+  }
+
+  .rule-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  /* Practice area */
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    border: 1.5px solid #1e2a45;
+    transition: border-color 0.2s;
+  }
+
+  .problem-card.correct { border-color: var(--product-color); background: rgba(123,237,159,0.05); }
+  .problem-card.incorrect { border-color: var(--accent); background: rgba(233,69,96,0.05); }
+
+  .problem-prompt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .choices { grid-template-columns: 1fr; }
+  }
+
+  .choice-btn {
+    padding: 10px 14px;
+    background: var(--card);
+    border: 1.5px solid #2a3a5e;
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+    line-height: 1.4;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--crimson);
+    background: rgba(200,16,46,0.12);
+  }
+
+  .choice-btn.correct-ans {
+    border-color: var(--product-color);
+    background: rgba(123,237,159,0.15);
+    color: var(--product-color);
+  }
+
+  .choice-btn.wrong-ans {
+    border-color: var(--accent);
+    background: rgba(233,69,96,0.12);
+    color: var(--accent);
+  }
+
+  .choice-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.ok { background: rgba(123,237,159,0.08); color: var(--product-color); }
+  .feedback.bad { background: rgba(233,69,96,0.08); color: #ff7f9e; }
+
+  /* Score bar */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border: 1.5px solid #1e2a45;
+  }
+
+  .score-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .score-label { font-size: 0.82rem; color: var(--muted); }
+
+  .new-set-btn {
+    margin-left: auto;
+    padding: 8px 18px;
+    background: var(--crimson);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .new-set-btn:hover { background: var(--crimson-light); }
+
+  /* Teacher panel */
+  .teacher-panel {
+    background: rgba(245,166,35,0.07);
+    border: 1.5px solid rgba(245,166,35,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+
+  .teacher-panel h3 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .teacher-panel ul {
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .teacher-panel ul li::before { content: '→ '; color: var(--gold); }
+
+  /* Expand/condense tabs distinction */
+  .expand-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    background: rgba(112,161,255,0.15);
+    color: var(--quotient-color);
+  }
+
+  .condense-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    background: rgba(255,165,2,0.15);
+    color: var(--power-color);
+  }
+
+  footer {
+    text-align: center;
+    padding: 12px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    border-top: 1px solid #1e2a45;
+    background: var(--surface);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">📐 <span>Log Rules</span> Warm-Up · Math 172</div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('student')">Student</button>
+    <button class="mode-btn" onclick="setMode('teacher')">Teacher</button>
+  </div>
+</header>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('formulas')">📋 Rules</button>
+  <button class="tab-btn" onclick="switchTab('expand')">🔓 Expand</button>
+  <button class="tab-btn" onclick="switchTab('condense')">🔒 Condense</button>
+</div>
+
+<main>
+
+  <!-- FORMULAS TAB -->
+  <div class="tab-panel active" id="tab-formulas">
+
+    <div id="teacher-formulas" class="teacher-panel" style="display:none">
+      <h3>🎓 Teacher Notes</h3>
+      <ul>
+        <li>Show this tab first — give students 30 sec to read before switching</li>
+        <li>Ask: "Which rule breaks a product? A fraction? An exponent?"</li>
+        <li>Predict before practice: "Which rule will we use most often?"</li>
+      </ul>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card product">
+        <div class="rule-label">Product Rule</div>
+        <div class="rule-formula">
+          <span class="mf">log<sub>b</sub>(M · N)</span>
+          <span class="mf">= log<sub>b</sub>(M) + log<sub>b</sub>(N)</span>
+        </div>
+        <div class="rule-note">Log of a product → sum of logs</div>
+      </div>
+      <div class="rule-card quotient">
+        <div class="rule-label">Quotient Rule</div>
+        <div class="rule-formula">
+          <span class="mf">log<sub>b</sub>(M / N)</span>
+          <span class="mf">= log<sub>b</sub>(M) − log<sub>b</sub>(N)</span>
+        </div>
+        <div class="rule-note">Log of a quotient → difference of logs</div>
+      </div>
+      <div class="rule-card power">
+        <div class="rule-label">Power Rule</div>
+        <div class="rule-formula">
+          <span class="mf">log<sub>b</sub>(M<sup>p</sup>)</span>
+          <span class="mf">= p · log<sub>b</sub>(M)</span>
+        </div>
+        <div class="rule-note">Exponent becomes a coefficient</div>
+      </div>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card" style="border-color:var(--muted); grid-column: 1 / -1;">
+        <div class="rule-label" style="color:var(--muted)">Remember</div>
+        <div class="rule-formula" style="font-size:0.92rem;">
+          <span class="mf">log<sub>b</sub>(b) = 1 &nbsp;&nbsp;&nbsp; log<sub>b</sub>(1) = 0 &nbsp;&nbsp;&nbsp; log<sub>b</sub>(b<sup>x</sup>) = x</span>
+        </div>
+        <div class="rule-note">These three come up constantly when simplifying</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EXPAND TAB -->
+  <div class="tab-panel" id="tab-expand">
+
+    <div id="teacher-expand" class="teacher-panel" style="display:none">
+      <h3>🎓 Teacher Notes — Expand</h3>
+      <ul>
+        <li>Ask students to name the rule BEFORE they pick an answer</li>
+        <li>Watch for: students adding instead of subtracting for quotients</li>
+        <li>Common error: forgetting to apply the power rule to each factor</li>
+        <li>New Set generates a fresh randomized problem set each time</li>
+      </ul>
+    </div>
+
+    <div class="score-bar">
+      <div>
+        <div class="score-num" id="exp-score">0 / 0</div>
+        <div class="score-label">correct</div>
+      </div>
+      <button class="new-set-btn" onclick="buildExpand()">↻ New Set</button>
+    </div>
+
+    <div class="section-label">Expand each logarithmic expression</div>
+    <div id="expand-problems"></div>
+
+  </div>
+
+  <!-- CONDENSE TAB -->
+  <div class="tab-panel" id="tab-condense">
+
+    <div id="teacher-condense" class="teacher-panel" style="display:none">
+      <h3>🎓 Teacher Notes — Condense</h3>
+      <ul>
+        <li>Condense = reverse direction — sum/difference → single log</li>
+        <li>Remind students: coefficient becomes an exponent first (Power Rule)</li>
+        <li>Common error: combining logs with different bases</li>
+        <li>New Set generates a fresh randomized problem set each time</li>
+      </ul>
+    </div>
+
+    <div class="score-bar">
+      <div>
+        <div class="score-num" id="cond-score">0 / 0</div>
+        <div class="score-label">correct</div>
+      </div>
+      <button class="new-set-btn" onclick="buildCondense()">↻ New Set</button>
+    </div>
+
+    <div class="section-label">Condense into a single logarithm</div>
+    <div id="condense-problems"></div>
+
+  </div>
+
+</main>
+
+<footer>Math 172 — Precalculus &nbsp;|&nbsp; v1.0 &nbsp;|&nbsp; Built for Santa Ana College</footer>
+
+<script>
+// ── MODE & TABS ──────────────────────────────────────────────
+let currentMode = 'student';
+
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.mode-btn[onclick="setMode('${m}')"]`).classList.add('active');
+  const show = m === 'teacher';
+  ['teacher-formulas','teacher-expand','teacher-condense'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'block' : 'none';
+  });
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── PROBLEM DATA ─────────────────────────────────────────────
+
+const expandPool = [
+  {
+    type: 'expand',
+    prompt: 'log₃(x · y²)',
+    correct: 'log₃(x) + 2·log₃(y)',
+    wrong: ['log₃(x) · 2·log₃(y)', 'log₃(x) − 2·log₃(y)', '2·log₃(xy)'],
+    rule: 'Product + Power Rule',
+    hint: 'Split the product first, then bring the exponent down.'
+  },
+  {
+    type: 'expand',
+    prompt: 'log₅(a/b)',
+    correct: 'log₅(a) − log₅(b)',
+    wrong: ['log₅(a) + log₅(b)', 'log₅(a) / log₅(b)', 'log₅(a − b)'],
+    rule: 'Quotient Rule',
+    hint: 'A fraction inside a log becomes a difference.'
+  },
+  {
+    type: 'expand',
+    prompt: 'ln(x³)',
+    correct: '3·ln(x)',
+    wrong: ['ln(x) + ln(3)', 'ln(3x)', 'ln(x)³'],
+    rule: 'Power Rule',
+    hint: 'Move the exponent out front as a coefficient.'
+  },
+  {
+    type: 'expand',
+    prompt: 'log₂(8x⁴)',
+    correct: '3 + 4·log₂(x)',
+    wrong: ['log₂(8) · 4·log₂(x)', '4·log₂(8x)', 'log₂(8) − 4·log₂(x)'],
+    rule: 'Product + Power Rule',
+    hint: 'log₂(8) = 3 because 2³ = 8. Then apply Power Rule to x⁴.'
+  },
+  {
+    type: 'expand',
+    prompt: 'log(m²/n³)',
+    correct: '2·log(m) − 3·log(n)',
+    wrong: ['2·log(m) + 3·log(n)', 'log(m²) / log(n³)', '3·log(m) − 2·log(n)'],
+    rule: 'Quotient + Power Rule',
+    hint: 'Quotient Rule first, then Power Rule to each term.'
+  },
+  {
+    type: 'expand',
+    prompt: 'ln(√x)',
+    correct: '½·ln(x)',
+    wrong: ['2·ln(x)', 'ln(x²)', 'ln(x) − ln(2)'],
+    rule: 'Power Rule (rational exponent)',
+    hint: '√x = x^(1/2). Power Rule: bring ½ out front.'
+  },
+  {
+    type: 'expand',
+    prompt: 'log₄(64·y)',
+    correct: '3 + log₄(y)',
+    wrong: ['log₄(64) · log₄(y)', '4 + log₄(y)', '3 − log₄(y)'],
+    rule: 'Product Rule',
+    hint: 'log₄(64) = 3 because 4³ = 64.'
+  },
+  {
+    type: 'expand',
+    prompt: 'log₂(x⁵/32)',
+    correct: '5·log₂(x) − 5',
+    wrong: ['5·log₂(x) + 5', '5·log₂(x/32)', '5·log₂(x) − log₂(32)'],
+    rule: 'Quotient + Power Rule',
+    hint: 'log₂(32) = 5 because 2⁵ = 32.'
+  }
+];
+
+const condensePool = [
+  {
+    type: 'condense',
+    prompt: 'log₃(x) + log₃(y)',
+    correct: 'log₃(xy)',
+    wrong: ['log₃(x + y)', 'log₃(x) · log₃(y)', 'log₆(xy)'],
+    rule: 'Product Rule (reverse)',
+    hint: 'Sum of logs → log of the product.'
+  },
+  {
+    type: 'condense',
+    prompt: 'log₅(a) − log₅(b)',
+    correct: 'log₅(a/b)',
+    wrong: ['log₅(a·b)', 'log₅(a − b)', 'log₅(a/b²)'],
+    rule: 'Quotient Rule (reverse)',
+    hint: 'Difference of logs → log of a fraction.'
+  },
+  {
+    type: 'condense',
+    prompt: '4·log₂(x)',
+    correct: 'log₂(x⁴)',
+    wrong: ['log₂(4x)', 'log₂(x) + 4', 'log₈(x)'],
+    rule: 'Power Rule (reverse)',
+    hint: 'Coefficient becomes the exponent inside the log.'
+  },
+  {
+    type: 'condense',
+    prompt: '2·ln(x) + ln(y)',
+    correct: 'ln(x²y)',
+    wrong: ['ln(2xy)', 'ln(x² + y)', 'ln(x²) · ln(y)'],
+    rule: 'Power + Product Rule',
+    hint: 'Apply Power Rule first: 2·ln(x) = ln(x²). Then combine.'
+  },
+  {
+    type: 'condense',
+    prompt: 'log(m) − 3·log(n)',
+    correct: 'log(m/n³)',
+    wrong: ['log(m − n³)', 'log(m·n³)', 'log(m/3n)'],
+    rule: 'Power + Quotient Rule',
+    hint: '3·log(n) = log(n³). Then subtract → fraction.'
+  },
+  {
+    type: 'condense',
+    prompt: '½·log₄(x) + log₄(y)',
+    correct: 'log₄(√x · y)',
+    wrong: ['log₄(x/2 · y)', 'log₄(√(xy))', 'log₄(x + y)/2'],
+    rule: 'Power + Product Rule',
+    hint: '½·log₄(x) = log₄(x^½) = log₄(√x). Then add → product.'
+  },
+  {
+    type: 'condense',
+    prompt: '3·log₂(x) − log₂(y) + log₂(z)',
+    correct: 'log₂(x³z/y)',
+    wrong: ['log₂(x³ · y · z)', 'log₂(x³/(yz))', 'log₂(3xz − y)'],
+    rule: 'Power + Product + Quotient Rule',
+    hint: 'Convert 3·log₂(x) = log₂(x³), then combine: add → numerator, subtract → denominator.'
+  },
+  {
+    type: 'condense',
+    prompt: 'log₆(4) + log₆(9)',
+    correct: 'log₆(36) = 2',
+    wrong: ['log₆(13)', 'log₁₂(36)', 'log₆(36)'],
+    rule: 'Product Rule → evaluate',
+    hint: 'log₆(4·9) = log₆(36) = log₆(6²) = 2.'
+  }
+];
+
+// ── SCORE STATE ──────────────────────────────────────────────
+let expCorrect = 0, expTotal = 0;
+let condCorrect = 0, condTotal = 0;
+
+function updateScore(type) {
+  if (type === 'expand') {
+    document.getElementById('exp-score').textContent = `${expCorrect} / ${expTotal}`;
+  } else {
+    document.getElementById('cond-score').textContent = `${condCorrect} / ${condTotal}`;
+  }
+}
+
+// ── RENDER PROBLEMS ──────────────────────────────────────────
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function pick(pool, n) { return shuffle(pool).slice(0, n); }
+
+function renderProblem(p, container, type) {
+  const div = document.createElement('div');
+  div.className = 'problem-card';
+
+  const tag = type === 'expand'
+    ? '<span class="expand-tag">EXPAND</span>'
+    : '<span class="condense-tag">CONDENSE</span>';
+
+  const allChoices = shuffle([p.correct, ...p.wrong.slice(0, 3)]);
+
+  div.innerHTML = `
+    ${tag}
+    <div class="problem-prompt">${p.prompt}</div>
+    <div class="choices">
+      ${allChoices.map(c => `<button class="choice-btn" onclick="checkAnswer(this, '${escape(c)}', '${escape(p.correct)}', '${escape(p.hint)}', '${escape(p.rule)}', '${type}')">${c}</button>`).join('')}
+    </div>
+    <div class="feedback"></div>
+  `;
+
+  container.appendChild(div);
+}
+
+function escape(s) { return s.replace(/'/g, '&#39;'); }
+function unescape2(s) { return s.replace(/&#39;/g, "'"); }
+
+function checkAnswer(btn, chosen, correct, hint, rule, type) {
+  const card = btn.closest('.problem-card');
+  const feedback = card.querySelector('.feedback');
+  const allBtns = card.querySelectorAll('.choice-btn');
+
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (unescape2(b.getAttribute('onclick')).includes(unescape2(correct))) {
+      b.classList.add('correct-ans');
+    }
+  });
+
+  const isCorrect = unescape2(chosen) === unescape2(correct);
+
+  if (isCorrect) {
+    btn.classList.add('correct-ans');
+    card.classList.add('correct');
+    feedback.className = 'feedback show ok';
+    feedback.innerHTML = `✓ Correct! Rule used: <strong>${unescape2(rule)}</strong>`;
+    if (type === 'expand') expCorrect++;
+    else condCorrect++;
+  } else {
+    btn.classList.add('wrong-ans');
+    card.classList.add('incorrect');
+    feedback.className = 'feedback show bad';
+    feedback.innerHTML = `✗ Not quite. <strong>Hint:</strong> ${unescape2(hint)}`;
+  }
+
+  if (type === 'expand') { expTotal++; updateScore('expand'); }
+  else { condTotal++; updateScore('condense'); }
+}
+
+function buildExpand() {
+  expCorrect = 0; expTotal = 0;
+  updateScore('expand');
+  const container = document.getElementById('expand-problems');
+  container.innerHTML = '';
+  pick(expandPool, 4).forEach(p => renderProblem(p, container, 'expand'));
+}
+
+function buildCondense() {
+  condCorrect = 0; condTotal = 0;
+  updateScore('condense');
+  const container = document.getElementById('condense-problems');
+  container.innerHTML = '';
+  pick(condensePool, 4).forEach(p => renderProblem(p, container, 'condense'));
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+buildExpand();
+buildCondense();
+</script>
+
+</body>
+</html>
